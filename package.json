@@ -1,5 +1,6 @@
 {
-  "name": "around-express",
+  "name": "evilplays-backend",
+  "author": "Sergio Ferrer",
   "version": "1.0.0",
   "description": "`/data` — JSON files to temporarily emulate database integration.",
   "main": "app.js",
