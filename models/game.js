@@ -35,18 +35,18 @@ const gameSchema = new mongoose.Schema({
 
 gameSchema.statics.checkIsOwner = function checkIsOwner(req) {
   return this.findOne({ _id: req.params.id })
-    .then((card) => {
-      if (!card) {
-        return Promise.reject(new Error('Card couldnt be retrieved'));
+    .then((game) => {
+      if (!game) {
+        return Promise.reject(new Error('Game couldnt be retrieved'));
       }
 
-      if (req.user._id.toString() !== card.owner.toString()) {
+      if (req.user._id.toString() !== game.owner.toString()) {
         return Promise.reject(new Error('You are not authorized to do that'));
       }
 
-      return card;
+      return game;
     });
 };
 
 // create the model and export it
-module.exports = mongoose.model('card', gameSchema);
+module.exports = mongoose.model('game', gameSchema);
