@@ -68,12 +68,12 @@ module.exports.getCurrentUser = (req, res, next) => {
 // the createUser request handler
 module.exports.createUser = (req, res, next) => {
   const {
-    name, about, avatar, email, password,
+    name, email, password, games,
   } = req.body;
 
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
-      name, about, avatar, email, password: hash,
+      name, email, password: hash, games,
     }))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
@@ -87,31 +87,10 @@ module.exports.createUser = (req, res, next) => {
 
 // the update profile request handler
 module.exports.updateProfile = (req, res, next) => {
-  const { name, about, avatar } = req.body;
+  const { name, games } = req.body;
   const opts = { runValidators: true, new: true };
 
-  User.findOneAndUpdate({ _id: req.user._id }, { name, about, avatar }, opts)
-    .orFail()
-    .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      let error = new AppError(500, 'Internal Server Error');
-      if (err.name === 'ValidationError') {
-        error = new AppError(400, err.message);
-      } else if (err.name === 'CastError') {
-        error = new AppError(400, 'Error retrieving user');
-      } else if (err.name === 'DocumentNotFoundError') {
-        error = new AppError(404, 'User not found');
-      }
-      next(error);
-    });
-};
-
-// the update avatar request handler
-module.exports.updateAvatar = (req, res, next) => {
-  const { avatar } = req.body;
-  const opts = { runValidators: true, new: true };
-
-  User.findOneAndUpdate({ _id: req.user._id }, { avatar }, opts)
+  User.findOneAndUpdate({ _id: req.user._id }, { name, games }, opts)
     .orFail()
     .then((user) => res.send({ data: user }))
     .catch((err) => {

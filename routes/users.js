@@ -1,9 +1,8 @@
 const userRouter = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
-const { validateURL } = require('../utils/validators');
 
 const {
-  getUsers, getUser, getCurrentUser, updateProfile, updateAvatar,
+  getUsers, getUser, getCurrentUser, updateProfile,
 } = require('../controllers/users');
 
 userRouter.get('/users/', getUsers);
@@ -16,14 +15,8 @@ userRouter.get('/users/:id', celebrate({
 userRouter.patch('/users/me', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
-    avatar: Joi.string().custom(validateURL),
+    games: Joi.array().items(Joi.string().hex().length(24)),
   }),
 }), updateProfile);
-userRouter.patch('/users/me/avatar', celebrate({
-  body: Joi.object().keys({
-    avatar: Joi.string().custom(validateURL),
-  }),
-}), updateAvatar);
 
 module.exports = userRouter;

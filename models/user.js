@@ -8,25 +8,7 @@ const userSchema = new mongoose.Schema({
     required: false,
     minlength: 2,
     maxlength: 30,
-    default: 'Jacques Cousteau',
-  },
-  about: {
-    type: String,
-    required: false,
-    minlength: 2,
-    maxlength: 30,
-    default: 'Explorer',
-  },
-  avatar: {
-    type: String,
-    required: false,
-    validate: {
-      validator(v) {
-        return /[(http(s)?)://(www.)?a-zA-Z0-9@:%.!$_+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/.test(v);
-      },
-      message: (props) => `${props.value} is not a valid link`,
-    },
-    default: 'https://pictures.s3.yandex.net/resources/avatar_1604080799.jpg',
+    default: 'John Doe',
   },
   email: {
     type: String,
@@ -44,6 +26,11 @@ const userSchema = new mongoose.Schema({
     required: true,
     select: false,
   },
+  games: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'game',
+    default: [],
+  }],
 });
 
 userSchema.statics.findUserByCredentials = function findUserByCredentials(email, password) {

@@ -7,8 +7,7 @@ const bodyParser = require('body-parser');
 require('dotenv').config();
 const userRouter = require('./routes/users');
 const gameRouter = require('./routes/games');
-// const auth = require('./middlewares/auth');
-const { validateURL } = require('./utils/validators');
+const auth = require('./middlewares/auth');
 const AppError = require('./errors/AppError');
 
 const {
@@ -53,12 +52,11 @@ app.post('/signup', celebrate({
     email: Joi.string().required(),
     password: Joi.string().required(),
     name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
-    avatar: Joi.string().custom(validateURL),
+    games: Joi.array().items(Joi.string().hex().length(24)),
   }),
 }), createUser);
 
-// app.use(auth);
+app.use(auth);
 
 app.use('/', userRouter);
 app.use('/', gameRouter);

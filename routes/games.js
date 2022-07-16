@@ -17,7 +17,11 @@ gameRouter.get('/games/', getGames);
 gameRouter.post('/games/', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required(),
-    link: Joi.string().required().custom(validateURL),
+    image: Joi.string().required().custom(validateURL),
+    description: Joi.string().required(),
+    rating: Joi.number().required(),
+    released: Joi.date().required(),
+    hoursPlayed: Joi.number().required(),
   }),
 }), createGame);
 gameRouter.delete('/games/:id', celebrate({
