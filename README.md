@@ -12,15 +12,12 @@ Welcome to our new videgame catalog!. Feel free to login with your account (mock
 
 You truly are a true gamer :).
 
-### Current Development
+### API Doc.
 
-- 3rd party API (https://rawg.io/apidocs) to retrieve games.
-- Mocked Login (you can logout and login by clicking the button but will be developed in the future).
-- Mocked Gallery (you can add games to your gallery by clicking the button but DB storage will be developed in the future).
-- You can remove games from your gallery
-- You can add hours to your games by clicking in the hours invested field.
-- Search functionality. You can use the search bar to search games among the ones you have added to your gallery.
-- Responsive behavior all across the SPA.
+- POST https://api.evilplays.students.nomoredomainssbs.ru/signup
+ - `{
+
+ }`
 
 ### Future Development (Phase 2)
 
