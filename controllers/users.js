@@ -75,11 +75,13 @@ module.exports.createUser = (req, res, next) => {
     .then((hash) => User.create({
       name, email, password: hash, games,
     }))
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send({ data: { name, email } }))
     .catch((err) => {
       let error = new AppError(500, 'Internal Server Error');
       if (err.name === 'ValidationError') {
         error = new AppError(400, err.message);
+      } else if (err.name === 'MongoServerError') {
+        error = new AppError(409, err.message);
       }
       next(error);
     });

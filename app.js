@@ -5,10 +5,12 @@ const cors = require('cors');
 const { celebrate, Joi, errors } = require('celebrate');
 const bodyParser = require('body-parser');
 require('dotenv').config();
-const userRouter = require('./routes/users');
-const gameRouter = require('./routes/games');
+const centralisedErrorHandling = require('./utils/centralisedErrorHandling');
+const indexRouter = require('./routes/index');
 const auth = require('./middlewares/auth');
 const AppError = require('./errors/AppError');
+
+const { NODE_ENV, MONGO_URL } = process.env;
 
 const {
   login, createUser,
@@ -20,7 +22,7 @@ const { PORT = 3000 } = process.env;
 
 const app = express();
 app.use(helmet());
-mongoose.connect('mongodb://localhost:27017/evilplays');
+mongoose.connect(NODE_ENV === 'production' ? MONGO_URL : 'mongodb://localhost:27017/evilplays');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -41,39 +43,10 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
-app.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required(),
-    password: Joi.string().required(),
-  }),
-}), login);
-app.post('/signup', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required(),
-    password: Joi.string().required(),
-    name: Joi.string().min(2).max(30),
-    games: Joi.array().items(Joi.string().hex().length(24)),
-  }),
-}), createUser);
-
-app.use(auth);
-
-app.use('/', userRouter);
-app.use('/', gameRouter);
+app.use('/', indexRouter);
 
 app.use(errors());
-// eslint-disable-next-line no-unused-vars
-app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
-  res
-    .status(statusCode)
-    .send({
-      // check the status and display a message based on it
-      message: statusCode === 500
-        ? 'An error occurred on the server'
-        : message,
-    });
-});
+app.use(centralisedErrorHandling);
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
