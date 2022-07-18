@@ -2,19 +2,17 @@ const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
 const cors = require('cors');
-const { celebrate, Joi, errors } = require('celebrate');
+const { errors } = require('celebrate');
 const bodyParser = require('body-parser');
 require('dotenv').config();
 const centralisedErrorHandling = require('./utils/centralisedErrorHandling');
+const limiter = require('./utils/rateLimit');
 const indexRouter = require('./routes/index');
-const auth = require('./middlewares/auth');
 const AppError = require('./errors/AppError');
 
-const { NODE_ENV, MONGO_URL } = process.env;
+const { ERROR_404, CRASH_TEST } = require('./utils/errorConstants');
 
-const {
-  login, createUser,
-} = require('./controllers/users');
+const { NODE_ENV, MONGO_URL } = process.env;
 
 const { requestLogger } = require('./middlewares/logger');
 
@@ -22,6 +20,8 @@ const { PORT = 3000 } = process.env;
 
 const app = express();
 app.use(helmet());
+app.use(limiter);
+
 mongoose.connect(NODE_ENV === 'production' ? MONGO_URL : 'mongodb://localhost:27017/evilplays');
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -33,13 +33,13 @@ app.options('*', cors());
 app.use(requestLogger);
 
 app.get('/', (req, res, next) => {
-  const error = new AppError(404, 'Requested resource not found');
+  const error = new AppError(404, ERROR_404);
   next(error);
 });
 
 app.get('/crash-test', () => {
   setTimeout(() => {
-    throw new Error('Server will crash now');
+    throw new Error(CRASH_TEST);
   }, 0);
 });
 

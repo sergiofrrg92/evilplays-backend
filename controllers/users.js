@@ -5,6 +5,8 @@ const AppError = require('../errors/AppError');
 const { NODE_ENV, JWT_SECRET } = process.env;
 const User = require('../models/user');
 
+const { ERROR_400_USER, ERROR_404_USER, ERROR_500 } = require('../utils/errorConstants');
+
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
@@ -39,11 +41,11 @@ module.exports.getUser = (req, res, next) => {
     .orFail()
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      let error = new AppError(500, 'Internal Server Error');
+      let error = new AppError(500, ERROR_500);
       if (err.name === 'CastError') {
-        error = new AppError(400, 'Error retrieving user');
+        error = new AppError(400, ERROR_400_USER);
       } else if (err.name === 'DocumentNotFoundError') {
-        error = new AppError(404, 'User not found');
+        error = new AppError(404, ERROR_404_USER);
       }
       next(error);
     });
@@ -57,9 +59,9 @@ module.exports.getCurrentUser = (req, res, next) => {
     .catch((err) => {
       let error = new AppError(500, 'Internal Server Error');
       if (err.name === 'CastError') {
-        error = new AppError(400, 'Error retrieving user');
+        error = new AppError(400, ERROR_400_USER);
       } else if (err.name === 'DocumentNotFoundError') {
-        error = new AppError(404, 'User not found');
+        error = new AppError(404, ERROR_404_USER);
       }
       next(error);
     });
@@ -75,7 +77,7 @@ module.exports.createUser = (req, res, next) => {
     .then((hash) => User.create({
       name, email, password: hash, games,
     }))
-    .then((user) => res.send({ data: { name, email } }))
+    .then(() => res.send({ data: { name, email } }))
     .catch((err) => {
       let error = new AppError(500, 'Internal Server Error');
       if (err.name === 'ValidationError') {
@@ -96,13 +98,13 @@ module.exports.updateProfile = (req, res, next) => {
     .orFail()
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      let error = new AppError(500, 'Internal Server Error');
+      let error = new AppError(500, ERROR_500);
       if (err.name === 'ValidationError') {
         error = new AppError(400, err.message);
       } else if (err.name === 'CastError') {
-        error = new AppError(400, 'Error retrieving user');
+        error = new AppError(400, ERROR_400_USER);
       } else if (err.name === 'DocumentNotFoundError') {
-        error = new AppError(404, 'User not found');
+        error = new AppError(404, ERROR_404_USER);
       }
       next(error);
     });
